@@ -1,16 +1,11 @@
 # JSON to Excel for VUE 2
-Download your JSON data as an excel file directly from the browser. This component it's based on the solution proposed on this thread https://stackoverflow.com/questions/17142427/javascript-to-export-html-table-to-excel
-
-# FIX
-[11-18-2017] Thanks to @msonowal now you can export to CSV, just add the prop: type="csv"
-[03-08-2017] downloaded file works with Microsoft Office
-
+vue2.0^ Json数据导出Excel文件
 
 ## ✔ Getting started
 
 Get the package:
 ```bash
-npm install vue-json-excel
+npm install vue-json-excel --save
 ```
 
 Register JsonExcel in your app entrypoint:
@@ -23,35 +18,10 @@ Vue.component('downloadExcel', JsonExcel);
 const app = new Vue({
 	el: '#app',
 	data: {
-		json_fields : {
-		    "name"      : "String",
-		    "city"      : "String",
-		    "country"   : "String",
-		    "birthdate" : "String",
-		    "amount"    : "Number"
-		},
-		json_data : [
-		    {
-		        "name"      : "Tony Peña",
-		        "city"      : "New York",
-		        "country"   : "United States",
-		        "birthdate" : "1978-03-15",
-		        "amount"    : 42
-		    },
-		    {
-		        "name"      : "Thessaloniki",
-		        "city"      : "Athens",
-		        "country"   : "Greece",
-		        "birthdate" : "1987-11-23",
-		        "amount"    : 42
-		    }
-		],
-		json_meta: [
-			[{
-				"key": "charset",
-				"value": "utf-8"
-			}]
-		],
+		json_fields : ['field1','field2','field3','field4','field5'],
+		json_data : [['value1','value2','value3','value4','value5'],
+					 ['value1','value2','value3','value4','value5']]
+	}
 ```
 
 In your HTML call it like
@@ -61,7 +31,7 @@ In your HTML call it like
 	class   = "btn btn-default"
 	:data   = "json_data"
 	:fields = "json_fields"
-	name    = "filename.xls">
+	name    = "filename">
 
 	Download Excel (you can customize this with html code!)
 
@@ -69,23 +39,6 @@ In your HTML call it like
 ```
 json_data contains the data you want to export, json_fields is a type mapping
 for the fields in the json, name is the file name.
-
-## Export CSV
-To export JSON to CSV file just add the prop type with value "csv":
-
-```html
-<download-excel
-	class   = "btn btn-default"
-	:data   = "json_data"
-	:fields = "json_fields"
-	type    = "csv"
-	name    = "filename.xls">
-
-	Download Excel (you can customize this with html code!)
-
-</download-excel>
-```
-
 
 ## License
 MIT

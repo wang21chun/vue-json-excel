@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/jecovier/vue-json-excel/issues"
   },
-  "homepage": "https://github.com/jecovier/vue-json-excel#readme"
+  "homepage": "https://github.com/jecovier/vue-json-excel#readme",
+  "dependencies": {
+    "xlsx": "^0.11.11"
+  }
 }

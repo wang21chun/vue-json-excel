@@ -1,173 +1,129 @@
 <template>
-	<a
-		href="#"
-		:id="id_name"
-		@click="generate">
-		<slot>
-			{{button_text}}
-		</slot>
-	</a>
+<button :class="className" @click="generate">
+    <slot>
+        {{button_text}}
+    </slot>
+</button>
 </template>
 
 <script>
 export default {
-	data: function(){
-		return {
-			animate   : true,
-			animation : '',
-		}
-	},
-	props: {
-		'type' : {
-			type: String,
-			default: "xls"
-		},
-		'button_text': {
-			type: String,
-			default: "Download Excel"
-		},
-		'data':{
-			type: Array,
-			required: true
-		},
-		'fields':{
-			type: Object,
-			required: true
-		},
-		'name':{
-			type: String,
-			default: "data.xls"
-		},
-		'meta':{
-			type: Array,
-			default: []
-		}
-	},
-	created: function () {
-	},
-	computed:{
-		id_name : function(){
-			var now = new Date().getTime();
-			return 'export_'+now;
-		}
-	},
-	methods: {
-		generate() {
-			if (this.type == 'csv') {
-				return this.exportCSV(this.data, this.name, this.fields);
-			}
-			return this.exportXLS(this.data, this.name, this.fields);
-		},
-		generate_excel: function () {
-	    	this.exportXLS(this.data, this.name, this.fields)
-		},
-		jsonToXLS: function (data, header) {
-			var xlsTemp = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta name=ProgId content=Excel.Sheet> <meta name=Generator content="Microsoft Excel 11"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>${table}</table></body></html>'
-
-			var xlsData = '', keys = []
-			if (header) {
-				xlsData += '<thead>'
-				for (var key in header) {
-					keys.push(key)
-					xlsData += '<th>' + header[key] + '</th>'
-				}
-				xlsData += '</thead>'
-				xlsData += '<tbody>'
-				data.map(function (item, index) {
-					xlsData += '<tr>'
-					for (var i = 0; i < keys.length; i++) {
-						if (keys[i].indexOf(".") !== -1) {
-							var keyNestedSplit = keys[i].split(".");
-							var valueFromNestedKey = item[keyNestedSplit[0]];
-						
-							for (var j = 1; j < keyNestedSplit.length; j++) {
-								valueFromNestedKey = valueFromNestedKey[keyNestedSplit[j]];
-							}
-
-							xlsData += '<td>' + valueFromNestedKey + '</td>'
-						} else {
-							xlsData += '<td>' + item[keys[i]] + '</td>'
-						}
-					}
-					xlsData += '</tr>'
-				})
-				xlsData += '</tbody>'
-				return xlsTemp.replace('${table}', xlsData)
-			}
-			data.map(function (item, index) {
-				xlsData += '<tbody><tr>'
-				for (var key in item) {
-					xlsData += '<td>' + item[key] + '</td>'
-				}
-				xlsData += '</tr></tbody>'
-			})
-			return xlsTemp.replace('${table}', xlsData)
-	  },
-		jsonToCSV: function (data, header) {
-			var csvData = ''
-			
-			if (header) {
-				for (var key in header) {
-					csvData +=  header[key] + ','
-				}
-				csvData = csvData.slice(0, csvData.length - 1)
-				csvData += '\r\n'
-			}
-			data.map(function (item) {
-				for (var k in item) {
-					csvData += item[k] + ','
-				}
-				csvData = csvData.slice(0, csvData.length - 1)
-				csvData += '\r\n'
-			})
-			return csvData
-	  },
-    base64: function (s) {
-	    return window.btoa(window.unescape(encodeURIComponent(s)))
+    data: function() {
+        return {};
     },
-    exportXLS: function (data, fileName, header) {
-		var XLSData = 'data:application/vnd.ms-excel;base64,' + this.base64(this.jsonToXLS(data, header))
-		this.download(XLSData, fileName)
-	},
-    exportCSV: function (data, fileName, keys) {
-		var CSVData = 'data:application/csv;base64,' + this.base64(this.jsonToCSV(data, keys))
-		this.download(CSVData, fileName)
-	},
-	base64ToBlob: function (base64Data) {
-		var arr   = base64Data.split(',')
-		var mime  = arr[0].match(/:(.*?);/)[1]
-		var bstr  = atob(arr[1])
-		var n     = bstr.length
-		var u8arr = new Uint8ClampedArray(n)
+    props: {
+        'type': {
+            type: String,
+            default: "xlsx"
+        },
+        'button_text': {
+            type: String,
+            default: "Download Excel"
+        },
+        'data': {
+            type: Array,
+            required: true
+        },
+        'fields': {
+            type: Array,
+            required: true
+        },
+        'name': {
+            type: String,
+            default: "defalut"
+        }
+    },
+    created: function() {},
+    computed: {
 
-		while (n--) {
-			u8arr[n] = bstr.charCodeAt(n)
-		}
-		return new Blob([u8arr], { type: mime })
-	},
-	download: function (base64data, fileName) {
-		if (window.navigator.msSaveBlob) {
-			var blob = this.base64ToBlob(base64data)
-			window.navigator.msSaveBlob(blob, filename)
-			return false;
-		}
+    },
+    methods: {
+        generate() {
+            let data = [].concat(this.data);
+            data.unshift(this.fields);
+            return this.exportXLSX(data);
+        },
+        exportXLSX: function(data) {
+            function Workbook() {
+                if (!(this instanceof Workbook)) return new Workbook();
+                this.SheetNames = [];
+                this.Sheets = {};
+            }
 
-		var a = document.getElementById(this.id_name);
+            let ws_name = this.name || "Sheet";
+            const wb = new Workbook(),
+                ws = this.sheet_from(data);
+            wb.SheetNames.push(ws_name);
+            wb.Sheets[ws_name] = ws;
 
-		if (window.URL.createObjectURL) {
-			var blob       = this.base64ToBlob(base64data)
-			var blobUrl    = window.URL.createObjectURL(blob)
+            const wbout = XLSX.write(wb, {
+                bookType: self.type,
+                bookSST: true,
+                type: 'binary'
+            });
+            this.download(wbout);
+        },
+        sheet_from(data) {
+            const ws = {};
+            const range = {
+                s: {
+                    c: 10000000,
+                    r: 10000000
+                },
+                e: {
+                    c: 0,
+                    r: 0
+                }
+            };
 
-			a.href     = blobUrl;
-			a.download = fileName;
-			return
-		}
-		if (alink.download === '') {
-			a.href     = base64data
-			a.download = fileName;
-			return
-		}
-	}//end download
-	}
+            for (let R = 0; R != data.length; ++R) {
+                for (let C = 0; C != data[R].length; ++C) {
+                    if (range.s.r > R) range.s.r = R;
+                    if (range.s.c > C) range.s.c = C;
+                    if (range.e.r < R) range.e.r = R;
+                    if (range.e.c < C) range.e.c = C;
+                    const cell = {
+                        v: data[R][C]
+                    };
+                    if (cell.v == null) continue;
+                    const cell_ref = XLSX.utils.encode_cell({
+                        c: C,
+                        r: R
+                    });
+
+                    if (typeof cell.v === 'number') cell.t = 'n';
+                    else if (typeof cell.v === 'boolean') cell.t = 'b';
+                    else if (cell.v instanceof Date) {
+                        cell.t = 'n';
+                        cell.z = XLSX.SSF._table[14];
+                        cell.v = this.datenum(cell.v);
+                    } else cell.t = 's';
+
+                    ws[cell_ref] = cell;
+                }
+            }
+            if (range.s.c < 10000000) ws['!ref'] = XLSX.utils.encode_range(range);
+            return ws;
+        },
+        datenum(v, date1904) {
+            if (date1904) v += 1462;
+            const epoch = Date.parse(v);
+            return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+        },
+        s2ab(s) {
+            const buf = new ArrayBuffer(s.length);
+            const view = new Uint8Array(buf);
+            for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        },
+
+        download: function(wbout) {
+            const buff = this.s2ab(wbout);
+            const blob = new Blob([buff], {
+                type: "application/octet-stream"
+            });
+            saveAs(blob, `${this.name}.${this.type}`);
+        } //end download
+    }
 }
 </script>
