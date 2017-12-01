@@ -1,11 +1,14 @@
 # JSON to Excel for VUE 2
-vue2.0^ Json数据导出Excel文件 基于<a href="https://github.com/SheetJS/js-xlsx" target="_blank">js-xlxs</a>
+vue2.0^ Json数据导出Excel文件 基于<a href="https://github.com/SheetJS/js-xlsx">js-xlxs</a>
+在<a href="https://github.com/jecovier/vue-json-excel">这位朋友</a>的基础上修改的
+
+
 
 ## ✔ Getting started
 
 Get the package:
 ```bash
-npm install vue-json-excel --save
+npm install vue-json-excel file-saverjs  --save
 ```
 
 Register JsonExcel in your app entrypoint:
@@ -24,11 +27,10 @@ const app = new Vue({
 	}
 ```
 
-In your HTML call it like
+html中的写法
 
 ```html
 <download-excel
-	class   = "btn btn-default"
 	:data   = "json_data"
 	:fields = "json_fields"
 	name    = "filename">
@@ -37,13 +39,6 @@ In your HTML call it like
 
 </download-excel>
 ```
-json_data contains the data you want to export, json_fields is a type mapping
-for the fields in the json, name is the file name.
 
 ## License
 MIT
-
-
-
-#### Status
-This project is in an early stage of development. Any contribution is welcome :D

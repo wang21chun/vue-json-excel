@@ -1,5 +1,5 @@
 <template>
-<button :class="className" @click="generate">
+<button @click.stop="generate">
     <slot>
         {{button_text}}
     </slot>
