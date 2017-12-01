@@ -1,5 +1,5 @@
 # JSON to Excel for VUE 2
-vue2.0^ Json数据导出Excel文件 基于<a href="https://github.com/SheetJS/js-xlsx" target="_bluck">js-xlxs</a>
+vue2.0^ Json数据导出Excel文件 基于<a href="https://github.com/SheetJS/js-xlsx" target="_blank">js-xlxs</a>
 
 ## ✔ Getting started
 
